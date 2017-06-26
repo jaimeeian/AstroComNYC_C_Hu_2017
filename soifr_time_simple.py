@@ -10,7 +10,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.colors import LogNorm
-import numpy.ma as ma
+
 
 from pylab import * #import pylab for ioff()
 ioff()  # set interactive to off so no plotting to x-window
@@ -63,7 +63,7 @@ SolarLuminosity = 3.839e33
 #rs.list_format2_blocks(filename)
 
 
-jump=1
+jump=10
 
 N_snap = 1000 / jump
 
@@ -126,9 +126,9 @@ L_OI = np.zeros(N_snap)
 
 F_gas_SF = np.zeros(N_snap)
 
-thisSnap = 400
+thisSnap = 182
 
-for k in range(0,N_snap):
+for k in range(0, N_snap):
 #for k in range(thisSnap, thisSnap+1):
     kk = k*jump
     if (kk < 10):
@@ -516,17 +516,32 @@ for k in range(0,N_snap):
     print '???hot volume fraction r2z1 = ', V_frac_hot_r2z1[k]
 
 
-
-    #Makes 2d histograms (Phase Diagrams) for every snapshot and saves it
-    n_H_masked = np.ma.masked_where(idx_ism, n_H)
-    plt.hist2d(np.log10(n_H_masked), np.log10(chemT), range = [(-7, 2), (0, 8)], bins = 100, norm = LogNorm()); plt.xlabel('density'); plt.ylabel('temperature'); plt.title('Phase Diagram')
+    idx_ism = (r2d_gas < 2.0) | (np.abs(z_gas) < 1.0)
+    plt.hist2d(np.log10(n_H[idx_ism]), np.log10(chemT[idx_ism]), range = [(-4, 2), (0, 8)], bins = 100, norm = LogNorm()); plt.xlabel('Density (cm^-3)'); plt.ylabel('Temperature (K)'); plt.title('Phase Diagram')
+    
     if k < 10:
-        plt.savefig('histogram00{k}.png'.format(k=k))
-    elif 10 < k < 100:
-        plt.savefig('histogram0{k}.png'.format(k=k))
+        plt.savefig('phase_diagram_cropped00{k}.png'.format(k=k))
+    elif 10 <= k < 100:
+        plt.savefig('phase_diagram_cropped0{k}.png'.format(k=k))
 
     else:
-        plt.savefig('histogram{k}.png'.format(k=k))
+        plt.savefig('phase_diagram_cropped{k}.png'.format(k=k))
+
+    """
+    dz = 0.1
+    plt.hist2d(np.log10(n_H[idx_out]), np.log10(chemT[idx_out]), range = [(-4, 2), (0, 8)], bins = 100, norm = LogNorm()); plt.xlabel('log_10 Density (cm^-3)'); plt.ylabel('Temperature (K)'); plt.title('Phase Diagram')
+    
+    if k < 10:
+        plt.savefig('of_phase_diagram00{k}.png'.format(k=k))
+    elif 10 < k < 100:
+        plt.savefig('of_phase_diagram0{k}.png'.format(k=k))
+
+    else:
+        plt.savefig('of_phase_diagram{k}.png'.format(k=k))
+    
+    
+    """
+
 
     plt.clf()
 
@@ -553,11 +568,13 @@ for k in range(0,N_snap):
     
 ##########################################################################
 
-    
+    """
     if(save_data == True):
         print "Saving outputs..."
         np.savetxt('./soifr_time_jump1.txt', (time, sfr_total, ofr_vir, ifr_vir, ofr_2, ifr_2, H2_frac, H2_frac_eq, Zm_out_vir, vel_out_vir, vel_out_2, vel_in_2, mass_disc, mass_halo, mass_escape, Zm_disc, Zm_halo, Zm_escape, sfr_total_sc, M_frac_cold, M_frac_hot, M_frac_warm, V_frac_cold, V_frac_hot, V_frac_warm, F_H2_diff, F_H2_SF, f_PDR, f_dense_PDR, mean_G0, ofr_3, ifr_3, V_frac_hot_r2z0p5, V_frac_hot_r2z1, F_gas_SF) )
         print "done."
-    
+    """
+
+
 time_axis = jump*np.arange(1000/jump)
 plt.plot(time, ofr_2)
