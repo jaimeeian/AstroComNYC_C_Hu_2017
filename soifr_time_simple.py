@@ -515,32 +515,45 @@ for k in range(0, N_snap):
     V_frac_hot_r2z1[k] = np.sum( V_gas[idx_ism&(chemT>T_hot)] ) / np.sum(V_gas[idx_ism])
     print '???hot volume fraction r2z1 = ', V_frac_hot_r2z1[k]
 
-
-    idx_ism = (r2d_gas < 2.0) | (np.abs(z_gas) < 1.0)
-    plt.hist2d(np.log10(n_H[idx_ism]), np.log10(chemT[idx_ism]), range = [(-4, 2), (0, 8)], bins = 100, norm = LogNorm()); plt.xlabel('Density (cm^-3)'); plt.ylabel('Temperature (K)'); plt.title('Phase Diagram')
     
-    if k < 10:
-        plt.savefig('phase_diagram_cropped00{k}.png'.format(k=k))
-    elif 10 <= k < 100:
-        plt.savefig('phase_diagram_cropped0{k}.png'.format(k=k))
-
-    else:
-        plt.savefig('phase_diagram_cropped{k}.png'.format(k=k))
 
     """
+    idx_ism = (r2d_gas < 2.0) & (np.abs(z_gas) < 1.0)
+    plt.hist2d(np.log10(n_H[idx_ism]), np.log10(chemT[idx_ism]), range = [(-4, 4), (0, 8)], bins = 100, norm = LogNorm()); plt.xlabel('Density (cm^-3)'); plt.ylabel('Temperature (K)'); plt.title('Phase Diagram')
+    
+    if kk < 10:
+        plt.savefig('phase_diagram_cropped00{kk}.png'.format(kk=kk))
+    elif 10 <= kk < 100:
+        plt.savefig('phase_diagram_cropped0{kk}.png'.format(kk=kk))
+
+    else:
+        plt.savefig('phase_diagram_cropped{kk}.png'.format(kk=kk))
+    """
+    
+    z_cr = 2.0
     dz = 0.1
-    plt.hist2d(np.log10(n_H[idx_out]), np.log10(chemT[idx_out]), range = [(-4, 2), (0, 8)], bins = 100, norm = LogNorm()); plt.xlabel('log_10 Density (cm^-3)'); plt.ylabel('Temperature (K)'); plt.title('Phase Diagram')
+
+    upper_in = (np.abs(z_gas - z_cr) < dz) & (vz_gas*z_cr < 0.0)
+    lower_in = (np.abs(z_gas + z_cr) < dz) & (vz_gas*z_cr > 0.0)    
+    idx_in   = (upper_in | lower_in) & cylin
+
+    upper_out = (np.abs(z_gas - z_cr) < dz) & (vz_gas*z_cr > 0.0)
+    lower_out = (np.abs(z_gas + z_cr) < dz) & (vz_gas*z_cr < 0.0)
+    idx_out   = (upper_out | lower_out) & cylin
+
+
+    plt.hist2d(np.log10(n_H[idx_out]), np.log10(chemT[idx_out]),  bins = 100, norm = LogNorm()); plt.xlabel('Density (cm^-3)'); plt.ylabel('Temperature (K)'); plt.title('Phase Diagram')
     
-    if k < 10:
-        plt.savefig('of_phase_diagram00{k}.png'.format(k=k))
-    elif 10 < k < 100:
-        plt.savefig('of_phase_diagram0{k}.png'.format(k=k))
+    if kk < 10:
+        plt.savefig('of_phase_diagram00{kk}.png'.format(kk=kk))
+    elif 10 <= kk < 100:
+        plt.savefig('of_phase_diagram0{kk}.png'.format(kk=kk))
 
     else:
-        plt.savefig('of_phase_diagram{k}.png'.format(k=k))
+        plt.savefig('of_phase_diagram{kk}.png'.format(kk=kk))
     
     
-    """
+    
 
 
     plt.clf()
